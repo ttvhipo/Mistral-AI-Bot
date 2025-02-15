@@ -1,11 +1,9 @@
 import discord
 import requests
+import os
 
-# Replace with your Discord bot token
-DISCORD_BOT_TOKEN = 'MTM0MDQxNjM3ODc0NTY1NTMxNw.GYOugn.UKIUPsrmjbFOAuMQZstP1yxap6-1eCAZS2Oidk'
-
-# Replace with your Mistral API key
-MISTRAL_API_KEY = 'HqpkZimUXhgxqGKLk8OfD7TBag5Bmlbu'
+DISCORD_BOT_TOKEN = os.getenv('DISCORD_BOT_TOKEN')  # Get the token from environment variables
+MISTRAL_API_KEY = os.getenv('MISTRAL_API_KEY')  # Get the API key from environment variables
 MISTRAL_API_URL = 'https://api.mistral.ai/v1/chat/completions'
 
 intents = discord.Intents.default()

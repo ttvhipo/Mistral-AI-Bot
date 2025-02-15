@@ -48,9 +48,14 @@ async def on_ready():
     print(f'Logged in as {client.user}')
 
 @client.event
+@client.event
 async def on_message(message):
     if message.author == client.user:  # Ignore messages from the bot itself
         return
+         # Check if the message contains the word "Munir" (case-insensitive)
+    if "munir" in message.content.lower():
+        prompt = message.content  # Use the entire message as the prompt
+        response = get_mistral_response(prompt)  # Get response from Mistral API
 
     if client.user.mentioned_in(message):  # Check if the bot is mentioned
         prompt = message.content.replace(f'<@{client.user.id}>', '').strip()  # Remove the bot's mention
@@ -58,5 +63,8 @@ async def on_message(message):
 
         # Ping the user by including their mention in the response
         await message.channel.send(f"{message.author.mention} {response}")
+
+client.run(DISCORD_BOT_TOKEN)
+
 
 client.run(DISCORD_BOT_TOKEN)

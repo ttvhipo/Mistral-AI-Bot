@@ -35,12 +35,14 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
-    if message.author == client.user:
+    if message.author == client.user:  # Ignore messages from the bot itself
         return
 
-    if client.user.mentioned_in(message):
-        prompt = message.content.replace(f'<@{client.user.id}>', '').strip()
-        response = get_mistral_response(prompt)
-        await message.channel.send(response)
+    if client.user.mentioned_in(message):  # Check if the bot is mentioned
+        prompt = message.content.replace(f'<@{client.user.id}>', '').strip()  # Remove the bot's mention
+        response = get_mistral_response(prompt)  # Get response from Mistral API
 
+        # Ping the user by including their mention in the response
+        await message.channel.send(f"{message.author.mention} {response}")
+        
 client.run(DISCORD_BOT_TOKEN)

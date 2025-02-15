@@ -1,6 +1,7 @@
 import discord
 import requests
 import os
+from discord.ext import commands
 
 DISCORD_BOT_TOKEN = os.getenv('DISCORD_BOT_TOKEN')  # Get the token from environment variables
 MISTRAL_API_KEY = os.getenv('MISTRAL_API_KEY')  # Get the API key from environment variables
@@ -9,7 +10,7 @@ MISTRAL_API_URL = 'https://api.mistral.ai/v1/chat/completions'
 intents = discord.Intents.default()
 intents.message_content = True
 
-client = discord.Client(intents=intents)
+client = commands.Bot(command_prefix="!", intents=intents)
 
 def get_mistral_response(prompt):
     headers = {
@@ -17,7 +18,7 @@ def get_mistral_response(prompt):
         'Content-Type': 'application/json'
     }
     data = {
-        'model': 'mistral-medium',  # Replace with the model you want to use
+        'model': 'mistral-small',  # Use a smaller, faster model
         'messages': [
             {
                 "role": "system",
@@ -33,7 +34,7 @@ As Munir, you are proud of your family and often share stories about them. You a
             },
             {
                 "role": "user",
-                "content": prompt  # User's message
+                "content": prompt[:500]  # Limit the prompt to 500 characters
             }
         ]
     }
@@ -48,23 +49,22 @@ async def on_ready():
     print(f'Logged in as {client.user}')
 
 @client.event
-@client.event
 async def on_message(message):
     if message.author == client.user:  # Ignore messages from the bot itself
         return
-         # Check if the message contains the word "Munir" (case-insensitive)
-    if "munir" in message.content.lower():
-        prompt = message.content  # Use the entire message as the prompt
-        response = get_mistral_response(prompt)  # Get response from Mistral API
 
-    if client.user.mentioned_in(message):  # Check if the bot is mentioned
+    # Check if the bot is mentioned
+    if client.user.mentioned_in(message):
         prompt = message.content.replace(f'<@{client.user.id}>', '').strip()  # Remove the bot's mention
-        response = get_mistral_response(prompt)  # Get response from Mistral API
+        async with message.channel.typing():  # Show typing indicator
+            response = get_mistral_response(prompt)  # Get response from Mistral API
+        await message.channel.send(f"{message.author.mention} {response}")  # Send response with user mention
 
-        # Ping the user by including their mention in the response
-        await message.channel.send(f"{message.author.mention} {response}")
-
-client.run(DISCORD_BOT_TOKEN)
-
+    # Check if the message contains the word "Munir" (case-insensitive)
+    elif "munir" in message.content.lower():
+        prompt = message.content  # Use the entire message as the prompt
+        async with message.channel.typing():  # Show typing indicator
+            response = get_mistral_response(prompt)  # Get response from Mistral API
+        await message.channel.send(f"{message.author.mention} {response}")  # Send response with user mention
 
 client.run(DISCORD_BOT_TOKEN)

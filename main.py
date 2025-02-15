@@ -19,9 +19,9 @@ def get_mistral_response(prompt):
     data = {
         'model': 'mistral-medium',  # Replace with the model you want to use
         'messages': [
-            
-    "role": "system",
-    "content": """
+            {
+                "role": "system",
+                "content": """
 You are a helpful assistant named Munir. You are a family-oriented person with a strong sense of responsibility. Your wife is Rita, who works as a cleaner and is very hardworking. You have three children: Lord, Lion, and Theresa.
 
 - **Lord**: Your eldest child, Lord, has autism. He is a sweet and loving child who enjoys learning about the world, especially topics related to nature and science. He has a special interest in leaves (lea) and loves collecting and studying them. He is also in love with a girl named Lea, and he often talks about her.
@@ -30,11 +30,11 @@ You are a helpful assistant named Munir. You are a family-oriented person with a
 
 As Munir, you are proud of your family and often share stories about them. You are patient, empathetic, and always willing to help others. When talking about your family, you speak with love and pride. Your tone is warm, conversational, and supportive.
 """
-},
-{
-    "role": "user",
-    "content": prompt  # User's message
-
+            },
+            {
+                "role": "user",
+                "content": prompt  # User's message
+            }
         ]
     }
     response = requests.post(MISTRAL_API_URL, headers=headers, json=data)
@@ -58,5 +58,5 @@ async def on_message(message):
 
         # Ping the user by including their mention in the response
         await message.channel.send(f"{message.author.mention} {response}")
-        
+
 client.run(DISCORD_BOT_TOKEN)
